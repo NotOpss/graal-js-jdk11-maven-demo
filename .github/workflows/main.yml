@@ -7,9 +7,8 @@ on:
     #  - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
-  build:
+  job1:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -23,15 +22,18 @@ jobs:
         uses: einaregilsson/build-number@v3 
         with:
           token: ${{ secrets.GITHUB_TOKEN }}   
-      - name: Publish package
-        #run: mvn --batch-mode deploy
-        run: mvn versions:set -DnewVersion=1.0.4-'${env.BUILD_NUMBER}'-RELEASE && mvn clean deploy -Dbuildnumber=b'${env.BUILD_NUMBER}'
-        env:
+    
+  job2:
+    needs: job1
+    runs-on: ubuntu-latest
+    steps:      
+    - if: github.ref == 'refs/heads/master'
+      run: mvn versions:set -DnewVersion=1.0.4-'${env.BUILD_NUMBER}'-RELEASE && mvn clean deploy -Dbuildnumber=b'${env.BUILD_NUMBER}'
+      env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BUILD_NUMBER:  ${{ steps.buildnumber.outputs.build_number }}
-      - run: mkdir staging && cp target/*.jar staging
-      - uses: actions/upload-artifact@v2
-        with:
-          name: Package
-          path: staging
+          BUILD_NUMBER:  ${{needs.job1.outputs.build_number}}
+  
+  
+      
+    
      
