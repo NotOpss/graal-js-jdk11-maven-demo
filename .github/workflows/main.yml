@@ -36,8 +36,15 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
         cache: maven
-    - if: github.ref == 'refs/heads/master'
+    - name: for master    
+      if: github.ref == 'refs/heads/master'
       run: mvn versions:set -DnewVersion=1.0.4-'${env.BUILD_NUMBER}'-RELEASE && mvn clean deploy -Dbuildnumber=b'${env.BUILD_NUMBER}'
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_NUMBER:  ${{needs.job1.outputs.build_number}}
+    - name: for non-master    
+      if: github.ref != 'refs/heads/master'
+      run: mvn versions:set -DnewVersion=1.0.4-'${env.BUILD_NUMBER}' && mvn clean deploy -Dbuildnumber=b'${env.BUILD_NUMBER}'
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BUILD_NUMBER:  ${{needs.job1.outputs.build_number}}
