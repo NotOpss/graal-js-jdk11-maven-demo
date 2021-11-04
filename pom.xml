@@ -273,7 +273,8 @@
             </plugin>
             <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-scm-plugin</artifactId>       
+        <artifactId>maven-scm-plugin</artifactId> 
+		    <version>1.12.0</version>
         <configuration>
           <connectionType>connection</connectionType>
         </configuration>
