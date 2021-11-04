@@ -18,22 +18,20 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
           cache: maven
+      - name: Generate build number
+        id: buildnumber
+        uses: einaregilsson/build-number@v3 
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}   
       - name: Publish package
         #run: mvn --batch-mode deploy
         run: mvn versions:set -DnewVersion=1.0.4-'${env.BUILD_NUMBER}'-RELEASE && mvn clean deploy -Dbuildnumber=b'${env.BUILD_NUMBER}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BUILD_NUMBER: 01
+          BUILD_NUMBER:  ${{ steps.buildnumber.outputs.build_number }}
       - run: mkdir staging && cp target/*.jar staging
       - uses: actions/upload-artifact@v2
         with:
           name: Package
           path: staging
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+     
