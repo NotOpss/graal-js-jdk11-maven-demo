@@ -9,6 +9,8 @@ on:
 jobs:
   job1:
     runs-on: ubuntu-latest
+    outputs:
+      build_number: ${{ steps.buildnumber.outputs.build_number }}
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
