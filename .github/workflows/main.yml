@@ -19,9 +19,11 @@ jobs:
           distribution: 'adopt'
           cache: maven
       - name: Publish package
-        run: mvn --batch-mode deploy
+        #run: mvn --batch-mode deploy
+        run: mvn versions:set -DnewVersion=1.0.4-'${env.BUILD_NUMBER}'-RELEASE && mvn clean deploy -Dbuildnumber=b'${env.BUILD_NUMBER}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_NUMBER: 01
       - run: mkdir staging && cp target/*.jar staging
       - uses: actions/upload-artifact@v2
         with:
